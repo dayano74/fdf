@@ -11,6 +11,7 @@ SRCS := main.c \
 		ft_fdf_utils.c \
 		ft_free.c \
 		ft_read_file.c \
+		ft_calc_bounding_box.c \
 
 
 OBJS := $(SRCS:.c=.o)

@@ -6,27 +6,38 @@
 /*   By: dayano <dayano@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 11:53:40 by dayano            #+#    #+#             */
-/*   Updated: 2025/03/03 21:57:30 by dayano           ###   ########.fr       */
+/*   Updated: 2025/03/06 19:42:07 by dayano           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-static void	ft_fill_matrix(int *z_line, char *line)
+static void	ft_fill_line(int *z_line, int *color_line, char *line)
 {
-	char	**nums;
+	char	**tokens;
 	int		i;
+	char	*comma_ptr;
 
-	nums = NULL;
-	nums = ft_split(line, ' ');
+	tokens = ft_split(line, ' ');
 	i = 0;
-	while (nums[i])
+	while (tokens[i])
 	{
-		z_line[i] = ft_atoi(nums[i]);
-		free(nums[i]);
+		comma_ptr = ft_strchr(tokens[i], ',');
+		if (comma_ptr)
+		{
+			*comma_ptr = '\0';
+			z_line[i] = ft_atoi(tokens[i]);
+			color_line[i] = (int)ft_strtol(comma_ptr + 1, NULL, 16);
+		}
+		else
+		{
+			z_line[i] = ft_atoi(tokens[i]);
+			color_line[i] = -1;
+		}
+		free(tokens[i]);
 		i++;
 	}
-	free(nums);
+	free(tokens);
 }
 
 void	ft_append_line(char ***lines, int *line_count, char *line)
@@ -101,15 +112,17 @@ void	ft_read_file(char *file_name, t_fdf *data)
 		data->height = 0;
 		data->width = 0;
 		data->z_matrix = NULL;
+		data->color_martix = NULL;
 		return ;
 	}
 	data->height = line_count;
 	data->width = ft_count_words(lines[0], ' ');
 	data->z_matrix = ft_alloc_matrix(data->height, data->width);
+	data->color_martix = ft_alloc_matrix(data->height, data->width);
 	i = 0;
 	while (i < data->height)
 	{
-		ft_fill_matrix(data->z_matrix[i], lines[i]);
+		ft_fill_line(data->z_matrix[i], data->color_martix[i], lines[i]);
 		free(lines[i]);
 		i++;
 	}
